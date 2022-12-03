@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-export default function fileParser<T>(
+export const readLinewise = fileParser(x => x);
+
+export function fileParser<T>(
     parser: (s: string, i: number) => T,
     separator: string | RegExp = "\n",
 ) {

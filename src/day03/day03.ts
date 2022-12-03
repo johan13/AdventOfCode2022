@@ -1,8 +1,8 @@
 import R from "ramda";
-import { fileParser } from "../common";
+import { readLinewise } from "../common";
 
 const solution = (makeGroups: (rucksacks: string[]) => string[][]) =>
-    R.pipe(fileParser(R.identity), makeGroups, R.map(findCommonItem), R.map(getPriority), R.sum);
+    R.pipe(readLinewise, makeGroups, R.map(findCommonItem), R.map(getPriority), R.sum);
 
 export const part1 = solution(R.map(rucksack => R.splitAt(rucksack.length / 2, rucksack)));
 export const part2 = solution(R.splitEvery(3));
