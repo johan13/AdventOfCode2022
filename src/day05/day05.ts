@@ -1,8 +1,8 @@
 import R from "ramda";
-import { readLinewise } from "../common";
+import { readLines } from "../common";
 
-export const part1 = R.pipe(readLinewise, parseInput, makeMoves(true));
-export const part2 = R.pipe(readLinewise, parseInput, makeMoves(false));
+export const part1 = R.pipe(readLines, parseInput, makeMoves(true));
+export const part2 = R.pipe(readLines, parseInput, makeMoves(false));
 
 type State = ReturnType<typeof parseInput>;
 function parseInput(lines: string[]) {

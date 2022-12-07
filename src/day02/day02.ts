@@ -1,9 +1,9 @@
 import R from "ramda";
-import { readLinewise } from "../common";
+import { readLines } from "../common";
 
 const solution = (lookup: Record<string, number>) =>
     R.pipe(
-        readLinewise,
+        readLines,
         R.map(x => lookup[x]),
         R.sum,
     );

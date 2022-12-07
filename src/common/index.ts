@@ -1,1 +1,1 @@
-export { fileParser, readLinewise } from "./fileParser";
+export { fileParser, readLines } from "./fileParser";
