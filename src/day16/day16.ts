@@ -1,5 +1,5 @@
 import R from "ramda";
-import { fileParser } from "../common";
+import { fileParser, Heap } from "../common";
 
 export const part1 = R.pipe(fileParser(parseLine), doPart1);
 export const part2 = (filePath: string) => 0;
@@ -16,45 +16,59 @@ function parseLine(line: string) {
     };
 }
 
+type State = {
+    pos: Valve;
+    openValves: string[];
+    remainingTime: number;
+    flow: number;
+    maxAdditional: number;
+};
+
 function doPart1(valves: Valve[]): number {
     const start = valves.find(v => v.id === "AA")!;
-    return 1651; //recurse(valves, start, 30, [], 0, new Map());
-}
+    const heap = new Heap<State>((a, b) => b.flow + b.maxAdditional - a.flow - a.maxAdditional);
+    heap.push({
+        pos: start,
+        openValves: [],
+        remainingTime: 30,
+        flow: 0,
+        maxAdditional: 29 * valves.reduce((sum, v) => sum + v.flow, 0),
+    });
 
-function recurse(
-    valves: Valve[],
-    current: Valve,
-    remaining: number,
-    opened: string[],
-    flow: number,
-    bestSoFarMap: Map<string, number>,
-): number {
-    if (remaining === 0) return flow;
+    for (;;) {
+        let { pos, openValves, remainingTime, flow } = heap.pop()!;
 
-    const state = stateToString(current.id, opened);
-    const bestSoFar = bestSoFarMap.get(state);
-    if (bestSoFar && flow <= bestSoFar) return 0;
-    bestSoFarMap.set(state, flow);
-    console.log(state, flow);
+        if (remainingTime === 0) return flow;
 
-    let max = flow;
-    if (current.flow !== 0 && !opened.includes(current.id)) {
-        max = recurse(
-            valves,
-            current,
-            remaining - 1,
-            [...opened, current.id].sort(),
-            flow + current.flow * (remaining - 1),
-            bestSoFarMap,
-        );
+        remainingTime--;
+        const remainingValves = valves.filter(v => v.flow !== 0 && !openValves.includes(v.id));
+
+        if (pos.flow !== 0 && !openValves.includes(pos.id)) {
+            heap.push({
+                pos,
+                openValves: [...openValves, pos.id],
+                remainingTime,
+                flow: flow + remainingTime * pos.flow,
+                maxAdditional: remainingValves
+                    .filter(v => v.id !== pos.id)
+                    .map(x => x.flow)
+                    .sort((a, b) => b - a)
+                    .reduce((sum, f, i) => sum + f * Math.max(0, remainingTime - i * 2 - 2), 0),
+            });
+        }
+
+        const maxAdditional = remainingValves
+            .map(x => x.flow)
+            .sort((a, b) => b - a)
+            .reduce((sum, f, i) => sum + f * Math.max(0, remainingTime - i * 2 - 1), 0);
+        for (const next of pos.destinations) {
+            heap.push({
+                pos: valves.find(v => v.id === next)!,
+                openValves,
+                remainingTime,
+                flow,
+                maxAdditional,
+            });
+        }
     }
-    for (const nextId of current.destinations) {
-        const next = valves.find(v => v.id === nextId)!;
-        max = Math.max(max, recurse(valves, next, remaining - 1, opened, flow, bestSoFarMap));
-    }
-    return max;
-}
-
-function stateToString(currentId: string, opened: string[]) {
-    return `${currentId}:${opened.join(",")}`;
 }
