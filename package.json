@@ -9,7 +9,7 @@
     "scripts": {
         "prettier": "prettier --write .",
         "prettier-check": "prettier --check .",
-        "test": "mocha -r ts-node/register \"src/**/*.test.ts\""
+        "test": "mocha -t 10000 -r ts-node/register \"src/**/*.test.ts\""
     },
     "dependencies": {
         "@types/mocha": "^10.0.1",
