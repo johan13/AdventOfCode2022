@@ -1,1 +1,1 @@
-export { fileParser, readLines } from "./fileParser";
+export { fileParser, readChars, readLines } from "./fileParser";
