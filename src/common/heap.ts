@@ -2,7 +2,7 @@ const parent = (i: number) => (i - 1) >> 1;
 const leftChild = (i: number) => (i << 1) + 1;
 
 export class Heap<T> {
-    private array: T[] = [];
+    public array: T[] = [];
 
     public constructor(private readonly comparer: (a: T, b: T) => number) {}
 
